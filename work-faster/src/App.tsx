@@ -132,6 +132,9 @@ function App() {
     if (!isRunning) {
       setIsRunning(true);
       setGifImage(isBreak ? breakGif : workGif);
+      meowAudio.play().catch(err => {
+        console.log("Audio play failed:",err);
+      })
     }else {
       setIsRunning(false);
       setTimeLeft(isBreak ?5 * 60 : 25*60); //reset to 25 minutes
