@@ -26,6 +26,8 @@ function App() {
   const [gifImage, setGifImage] = useState(idleGif);
   const [breakButtonImage, setBreakButtonImage] = useState(breakBtn);
   const [workButtonImage, setWorkButtonImage] = useState(workBtn);
+  const [image, setImage] = useState(playImg);
+  const meowAudio = new Audio(meowSound);
 
   //frases de incetivo
   const encouragements = [
@@ -88,6 +90,8 @@ function App() {
     return () => clearInterval(timer); //cleanup on unmount or when isRunning changes
   }, [isRunning, timeLeft]);
 
+  //Tempo
+
   const formatTime = (seconds: number): string => {
     const minutes = Math.floor(seconds / 60).toString().padStart(2, '0');
 
@@ -99,6 +103,19 @@ function App() {
   useEffect(() => {
     switchMode(false);
   }, [] );
+
+  //Miau 
+  useEffect(() =>{
+    if (timeLeft === 0 && isRunning){
+      meowAudio.play().catch(err => {
+        console.error("Audio play failed:",err);
+      });
+      setIsRunning(false); //Optional: auto-play the timer
+      setImage(playImg); //Reset to play button
+      setGifImage(idleGif); //Reset to idle gif
+      setTimeLeft(isBreak ? 5 * 60 : 25 * 60);
+    }
+  }, [timeLeft]);
 
   //Switch between work and break modes 
 
@@ -146,14 +163,11 @@ function App() {
             <img src={breakButtonImage} alt="Break" />
           </button>
         </div>
-
-        //frases motivacionais
         <p className={`encouragement-text ${!isRunning ? "hidden" : ""}`}>
           { encouragement }
         </p>
-
         <h1 className='home-timer'>{formatTime(timeLeft)}</h1>
-        //gif
+
         <img src={gifImage} alt="Timer status" className='gif-image' />
 
         <button className='home-button' onClick={handleStart}>
